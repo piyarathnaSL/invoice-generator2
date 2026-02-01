@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ORO MANTRA | Professional Invoice Generator</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <!-- Your logo.png image -->
+                <img src="logo.png" class="logo-img" alt="ORO MANTRA Logo">
+                <div class="logo-text">
+                    <h1>ORO MANTRA</h1>
+                    <p class="tagline">Experience luxury in every day</p>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-secondary" id="resetBtn">
+                    <i class="fas fa-redo"></i> Reset Form
+                </button>
+                <button class="btn btn-primary" id="downloadBtn">
+                    <i class="fas fa-download"></i> Download Invoice PDF
+                </button>
+            </div>
+        </header>
+
+        <div class="main-content">
+            <div class="input-section">
+                <!-- Business Details -->
+                <section class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-building"></i> Business Details</h2>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="companyName">Company Name *</label>
+                            <input type="text" id="companyName" value="ORO MANTRA" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="businessEmail">Email Address *</label>
+                            <input type="email" id="businessEmail" value="oromantra@gmail.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="businessAddress">Business Address</label>
+                            <input type="text" id="businessAddress" value="123 Business Street">
+                        </div>
+                        <div class="form-group">
+                            <label for="businessCity">City & Postal Code</label>
+                            <input type="text" id="businessCity" value="Mumbai, Maharashtra 400001">
+                        </div>
+                        <div class="form-group">
+                            <label for="businessPhone">Phone Number</label>
+                            <input type="tel" id="businessPhone" value="+91 98765 43210">
+                        </div>
+                        <div class="form-group">
+                            <label for="gstNumber">GST Number (Optional)</label>
+                            <input type="text" id="gstNumber" value="22AAAAA0000A1Z5">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Customer Details -->
+                <section class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-user"></i> Customer Details</h2>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="customerName">Customer Name *</label>
+                            <input type="text" id="customerName" value="John Doe" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="customerEmail">Customer Email (Optional)</label>
+                            <input type="email" id="customerEmail" value="customer@email.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="customerAddress">Customer Address</label>
+                            <input type="text" id="customerAddress" value="456 Customer Lane">
+                        </div>
+                        <div class="form-group">
+                            <label for="customerCity">City & Postal Code</label>
+                            <input type="text" id="customerCity" value="Colombo, 00100">
+                        </div>
+                        <div class="form-group">
+                            <label for="customerPhone">Phone Number</label>
+                            <input type="tel" id="customerPhone" value="+94 11 234 5678">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Invoice Details -->
+                <section class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-file-invoice"></i> Invoice Details</h2>
+                    </div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="invoiceNumber">Invoice Number *</label>
+                            <input type="text" id="invoiceNumber" value="INV-2602-220" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="invoiceDate">Invoice Date *</label>
+                            <input type="date" id="invoiceDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="dueDate">Due Date *</label>
+                            <input type="date" id="dueDate" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="taxRate">Tax Rate (%)</label>
+                            <input type="number" id="taxRate" value="18" min="0" max="100" step="0.01">
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Items Section -->
+                <section class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-shopping-cart"></i> Invoice Items</h2>
+                        <button type="button" class="btn btn-success" id="addItemBtn">
+                            <i class="fas fa-plus"></i> Add Item
+                        </button>
+                    </div>
+                    <div class="items-container" id="itemsContainer">
+                        <!-- Items will be added dynamically -->
+                    </div>
+                    <div class="items-total">
+                        <div class="total-display">
+                            <span>Subtotal:</span>
+                            <span id="subtotalDisplay">LKR 0.00</span>
+                        </div>
+                        <div class="total-display">
+                            <span>Tax (<span id="taxRateDisplay">18</span>%):</span>
+                            <span id="taxDisplay">LKR 0.00</span>
+                        </div>
+                        <div class="total-display grand-total">
+                            <span>Total:</span>
+                            <span id="totalDisplay">LKR 0.00</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Notes -->
+                <section class="card">
+                    <div class="card-header">
+                        <h2><i class="fas fa-sticky-note"></i> Additional Notes</h2>
+                    </div>
+                    <div class="form-group">
+                        <textarea id="notes" rows="4"
+                            placeholder="Add any additional notes or terms here...">Thank you for your business! Please make payment within the due date.</textarea>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Live Preview Section -->
+            <div class="preview-section">
+                <div class="card preview-header">
+                    <h2><i class="fas fa-eye"></i> Live Invoice Preview</h2>
+                    <p>Real-time preview of your invoice</p>
+                </div>
+                <div class="card preview-card" id="invoicePreview">
+                    <!-- Invoice preview will be rendered here -->
+                </div>
+                <div class="pdf-only" id="pdfContent" style="display: none;">
+                    <!-- PDF content will be generated here -->
+                </div>
+                <div class="preview-actions">
+                    <button class="btn btn-primary" id="updatePreviewBtn">
+                        <i class="fas fa-sync-alt"></i> Update Preview
+                    </button>
+                    <div class="preview-info">
+                        <p><i class="fas fa-info-circle"></i> Preview updates automatically as you type</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <!-- Footer logo -->
+                    <img src="logo.png" class="logo-img small" alt="ORO MANTRA Logo">
+                    <div>
+                        <h3>ORO MANTRA</h3>
+                        <p>Professional Invoice Generator</p>
+                    </div>
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link"><i class="fas fa-question-circle"></i> Help</a>
+                    <a href="#" class="footer-link"><i class="fas fa-envelope"></i> Contact</a>
+                    <a href="https://github.com/yourusername/invoice-generator" target="_blank"
+                        class="footer-link github-link">
+                        <i class="fab fa-github"></i> GitHub Repository
+                    </a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 ORO MANTRA. All rights reserved. | Create beautiful invoices instantly.</p>
+                <div class="footer-weather">
+                    <i class="fas fa-sun"></i>
+                    <span>Ready to generate your professional invoice</span>
+                </div>
+            </div>
+        </footer>
+
+        <!-- Instructions Modal -->
+        <div class="modal" id="instructionsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2><i class="fas fa-info-circle"></i> How to Use This Invoice Generator</h2>
+                    <button class="modal-close" id="closeModal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="instruction-step">
+                        <span class="step-number">1</span>
+                        <div>
+                            <h3>Fill in Business Details</h3>
+                            <p>Enter your company information including GST number if applicable.</p>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <span class="step-number">2</span>
+                        <div>
+                            <h3>Add Customer Information</h3>
+                            <p>Enter the customer's details who will receive this invoice.</p>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <span class="step-number">3</span>
+                        <div>
+                            <h3>Set Invoice Details</h3>
+                            <p>Add invoice number, dates, and tax rate.</p>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <span class="step-number">4</span>
+                        <div>
+                            <h3>Add Items & Services</h3>
+                            <p>Click "Add Item" to list all products or services with quantities and rates.</p>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <span class="step-number">5</span>
+                        <div>
+                            <h3>Download PDF</h3>
+                            <p>Click "Download Invoice PDF" to save your professional invoice.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="startCreatingBtn">Start Creating Invoice</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
